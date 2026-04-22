@@ -11,7 +11,7 @@ AppState currentAppState = APP_CLOCK;
 AppState lastAppState = APP_CLOCK;
 
 void setup() {
-  initHardware();
+  if (!initHardware())display.println(F("RTC Failed!"));
   
   // Need to call init for the current app state if needed
   // Right now, Clock doesn't need an explicit init() call every time.

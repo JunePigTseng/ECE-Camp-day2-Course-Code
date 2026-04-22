@@ -1,8 +1,8 @@
 #ifndef STATE_SETTINGS_H
 #define STATE_SETTINGS_H
 
-#include <Arduino.h>
 #include "Globals.h"
+#include <Arduino.h>
 
 void updateStateSettings();
 
