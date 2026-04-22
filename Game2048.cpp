@@ -93,19 +93,19 @@ void updateGame2048() {
     drawBoard();
   }
   else if (currentState == GSTATE_GAMEOVER) {
-    display.clearDisplay();
+    display.fillScreen(ST77XX_BLACK);
     display.setTextSize(1);
-    display.setCursor(10, 10);
+    display.setTextColor(ST77XX_WHITE);
+    display.setCursor(10, 30);
     if (victory) display.print(F("YOU WON!"));
     else display.print(F("GAME OVER"));
     
-    display.setCursor(10, 30);
+    display.setCursor(10, 60);
     display.print(F("Score: "));
     display.print(score);
     
-    display.setCursor(10, 50);
+    display.setCursor(10, 90);
     display.print(F("Press Btn to Exit"));
-    display.display();
   }
 }
 
@@ -118,20 +118,25 @@ static void resetGame() {
 }
 
 static void drawBoard() {
-  display.clearDisplay();
+  display.fillScreen(ST77XX_BLACK);
   int SCREEN_W = display.width();
   int SCREEN_H = display.height();
-  int cellW = SCREEN_W / 4;
-  int cellH = SCREEN_H / 4;
+  // Use a square area for the 4x4 grid
+  int gridSize = min(SCREEN_W, SCREEN_H);
+  int cellW = gridSize / 4;
+  int cellH = cellW;  // Keep cells square
+  int offsetX = (SCREEN_W - gridSize) / 2;
+  int offsetY = (SCREEN_H - gridSize) / 2;
   
   for (int r = 0; r < 4; r++) {
     for (int c = 0; c < 4; c++) {
-      int x = c * cellW;
-      int y = r * cellH;
+      int x = offsetX + c * cellW;
+      int y = offsetY + r * cellH;
       
-      display.drawRect(x, y, cellW, cellH, SSD1306_WHITE);
+      display.drawRect(x, y, cellW, cellH, ST77XX_WHITE);
       
       if (board[r][c] > 0) {
+        display.setTextColor(ST77XX_WHITE);
         String num = String(board[r][c]);
         int16_t x1, y1;
         uint16_t w, h;
@@ -144,7 +149,6 @@ static void drawBoard() {
       }
     }
   }
-  display.display();
 }
 
 static void addRandomTile() {

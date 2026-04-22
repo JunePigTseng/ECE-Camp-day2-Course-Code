@@ -8,16 +8,16 @@ void updateStateCalibrate() {
     return;
   }
 
-  display.clearDisplay();
+  display.fillScreen(ST77XX_BLACK);
   display.setTextSize(1);
+  display.setTextColor(ST77XX_WHITE);
   display.setCursor(0, 0);
   display.println(F("CALIBRATION"));
   
-  display.setCursor(0, 20);
+  display.setCursor(0, 30);
   display.println(F("Hold device flat"));
   display.println(F("in play position"));
   
-  display.setCursor(0, 50);
+  display.setCursor(0, 70);
   display.println(F("Press Btn to start!"));
-  display.display();
 }

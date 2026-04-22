@@ -2,18 +2,15 @@
 
 // Define Pins
 #define ENC_CLK 3
-#define ENC_DT 4
-#define ENC_SW 2
+#define ENC_DT  4
+#define ENC_SW  2
 
-#define RTC_CLK 5
-#define RTC_DAT 6
-#define RTC_RST 7
-
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_ST7735 display(TFT_CS, TFT_DC, TFT_RST);
 Adafruit_MPU6050 mpu;
 
-// Init RTC
-virtuabotixRTC myRTC(RTC_CLK, RTC_DAT, RTC_RST);
+// Init RTC (I2C, uses Wire: SDA=A4, SCL=A5)
+RTC_DS3231 myRTC;
+DateTime now;
 
 // Internal Input State
 static int encoderDelta = 0;
@@ -30,20 +27,31 @@ static float baseZ = 0;
 void initHardware() {
   Serial.begin(115200);
 
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    Serial.println(F("SSD1306 failed"));
-    for(;;);
-  }
-  display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
+  // Init SPI TFT Display (ST7735S)
+  display.initR(INITR_BLACKTAB);   // Use INITR_BLACKTAB for most ST7735S modules
+  display.setRotation(0);          // Adjust rotation as needed (0-3)
+  display.fillScreen(ST77XX_BLACK);
+  display.setTextColor(ST77XX_WHITE);
   display.setTextSize(1);
   display.setCursor(0, 0);
   display.println(F("Connecting MPU..."));
-  display.display();
 
+  // Init I2C RTC (DS3231)
+  if (!myRTC.begin()) {
+    display.println(F("RTC Failed!"));
+    while (1) { delay(10); }
+  }
+  // If RTC lost power, set the time to compile time:
+  if (myRTC.lostPower()) {
+    myRTC.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+
+  // If you need to manually set time, uncomment:
+  // myRTC.adjust(DateTime(2026, 1, 10, 23, 59, 0));
+
+  // Init MPU6050
   if (!mpu.begin()) {
     display.println(F("MPU Failed!"));
-    display.display();
     while (1) { delay(10); }
   }
   mpu.setAccelerometerRange(MPU6050_RANGE_4_G);
@@ -53,13 +61,12 @@ void initHardware() {
   pinMode(ENC_DT, INPUT_PULLUP);
   pinMode(ENC_SW, INPUT_PULLUP);
   lastClk = digitalRead(ENC_CLK);
-
-  // If you need to set initial time, uncomment this line: 
-  // myRTC.setDS1302Time(00, 59, 23, 6, 10, 1, 2026); 
-  // seconds, minutes, hours, day of week, day, month, year
 }
 
 void updateHardware() {
+  // Update RTC time once per loop
+  now = myRTC.now();
+
   // Simple Polling Encoder Read
   int currentClk = digitalRead(ENC_CLK);
   if (currentClk != lastClk && currentClk == 1) {

@@ -15,32 +15,28 @@ void updateStateClock() {
     return;
   }
 
-  // Update logic
-  // Update RTC reading
-  myRTC.updateTime();
+  // 'now' is already updated in updateHardware()
 
   // Rendering
-  display.clearDisplay();
+  display.fillScreen(ST77XX_BLACK);
   
   // Draw Time
   display.setTextSize(3);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(20, 20);
+  display.setTextColor(ST77XX_WHITE);
+  display.setCursor(10, 50);
   
-  if (myRTC.hours < 10) display.print("0");
-  display.print(myRTC.hours);
+  if (now.hour() < 10) display.print("0");
+  display.print(now.hour());
   display.print(":");
-  if (myRTC.minutes < 10) display.print("0");
-  display.print(myRTC.minutes);
+  if (now.minute() < 10) display.print("0");
+  display.print(now.minute());
 
   // Draw Date slightly smaller below
   display.setTextSize(1);
-  display.setCursor(35, 50);
-  display.print(myRTC.year);
+  display.setCursor(25, 90);
+  display.print(now.year());
   display.print("/");
-  display.print(myRTC.month);
+  display.print(now.month());
   display.print("/");
-  display.print(myRTC.dayofmonth);
-  
-  display.display();
+  display.print(now.day());
 }

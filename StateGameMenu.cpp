@@ -29,14 +29,13 @@ void updateStateGameMenu() {
   }
 
   // Render
-  display.clearDisplay();
+  display.fillScreen(ST77XX_BLACK);
   display.setTextSize(1);
+  display.setTextColor(ST77XX_WHITE);
   display.setCursor(0, 0);
   display.println(F("--- GAME MENU ---"));
 
-  display.setCursor(10, 25);
+  display.setCursor(10, 35);
   if (gameCursor == 0) display.print(F("> ")); else display.print(F("  "));
   display.print(F("2048"));
-
-  display.display();
 }
