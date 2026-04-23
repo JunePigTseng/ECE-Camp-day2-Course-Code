@@ -8,7 +8,7 @@ void updateStateGameMenu() {
     // Handle transitions
     if (isTiltedLeft()) {
         delay(200);
-        currentAppState = APP_CLOCK;
+        currentAppState = AppState::APP_CLOCK;
         return;
     }
 

@@ -19,7 +19,7 @@ void updateStateSettings() {
     // Handle Input
     if (isButtonPressed()) {
         if (cursorIndex == 0) {
-            currentAppState = APP_CLOCK; // Back to clock
+            currentAppState = AppState::APP_CLOCK; // Back to clock
             return;
         }
     }

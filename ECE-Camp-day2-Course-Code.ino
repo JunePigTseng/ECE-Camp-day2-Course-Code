@@ -1,18 +1,26 @@
-#include "Globals.h"
-#include "HardwareManager.h"
-#include "StateClock.h"
-#include "StateSettings.h"
-#include "StateGameMenu.h"
-#include "StateCalibrate.h"
-#include "Game2048.h"
+#include "include/Globals.h"
+#include "include/HardwareManager.h"
+#include "include/StateClock.h"
+#include "include/StateSettings.h"
+#include "include/StateGameMenu.h"
+#include "include/StateCalibrate.h"
+#include "include/Game2048.h"
 
 // Define Global State
-AppState currentAppState = APP_CLOCK;
-AppState lastAppState = APP_CLOCK;
+AppState currentAppState = AppState::APP_CLOCK;
+AppState lastAppState = AppState::APP_CLOCK;
 
 void setup() {
-  if (!initHardware())display.println(F("RTC Failed!"));
-  
+  switch (initHardware()){
+    case 1:
+      display.println(F("RTC Failed"));
+      for(;;);
+    case 2:
+      display.println(F("MPU Failed"));
+      for(;;);
+    default:
+      display.println(F("Hardware init Success"));
+  }
   // Need to call init for the current app state if needed
   // Right now, Clock doesn't need an explicit init() call every time.
 }
@@ -22,8 +30,9 @@ void loop() {
   updateHardware();
 
   // If we just entered a new state, fire any 1-time init routines
-  if (currentAppState != lastAppState) {
-    if (currentAppState == APP_PLAY_2048) {
+  // currentAppState != lastAppState?
+  if (currentAppState ^ lastAppState) {
+    if (!currentAppState ^ AppState::APP_PLAY_2048) {
       initGame2048();
     }
     // Could add init routines for others here
@@ -32,19 +41,19 @@ void loop() {
 
   // State Machine Router
   switch(currentAppState) {
-    case APP_CLOCK:
+    case AppState::APP_CLOCK:
       updateStateClock();
       break;
-    case APP_SETTINGS:
+    case AppState::APP_SETTINGS:
       updateStateSettings();
       break;
-    case APP_GAME_MENU:
+    case AppState::APP_GAME_MENU:
       updateStateGameMenu();
       break;
-    case APP_CALIBRATE_2048:
+    case AppState::APP_CALIBRATE_2048:
       updateStateCalibrate();
       break;
-    case APP_PLAY_2048:
+    case AppState::APP_PLAY_2048:
       updateGame2048();
       break;
   }

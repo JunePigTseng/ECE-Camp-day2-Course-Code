@@ -25,6 +25,10 @@ static float baseX = 0;
 static float baseY = 0;
 static float baseZ = 0;
 
+// retrun
+//  0 -> success
+//  1 -> RTC Failed
+//  2 -> MPU Failed
 int8_t initHardware() {
     Serial.begin(115200);
 
@@ -38,8 +42,7 @@ int8_t initHardware() {
     display.println(F("Connecting MPU..."));
 
     // Init I2C RTC (DS3231)
-    if (!myRTC.begin())
-        return -1;
+    if (!myRTC.begin()) return 1;
     // If RTC lost power, set the time to compile time:
     if (myRTC.lostPower()) {
         myRTC.adjust(DateTime(F(__DATE__), F(__TIME__)));
@@ -49,12 +52,8 @@ int8_t initHardware() {
     // myRTC.adjust(DateTime(2026, 1, 10, 23, 59, 0));
 
     // Init MPU6050
-    if (!mpu.begin()) {
-        display.println(F("MPU Failed!"));
-        while (1) {
-            delay(10);
-        }
-    }
+    if (!mpu.begin()) retrun 2;
+
     mpu.setAccelerometerRange(MPU6050_RANGE_4_G);
     mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 

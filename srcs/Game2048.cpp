@@ -1,5 +1,6 @@
 #include "../include/Game2048.h"
 #include "../include/HardwareManager.h"
+#include <cstdint>
 
 // Game configuration
 const float RELATIVE_TILT_THRESHOLD = 4.0;
@@ -11,11 +12,7 @@ static uint32_t score;
 static bool victory;
 static uint32_t lastMoveTime;
 static bool isTiltedGate;
-
-enum Game2048State { GSTATE_PLAYING, GSTATE_GAMEOVER };
 static Game2048State currentState;
-
-enum Direction { DIR_NONE, DIR_UP, DIR_DOWN, DIR_LEFT, DIR_RIGHT };
 
 // Internal Logic Methods
 static void resetGame();
@@ -40,13 +37,13 @@ void initGame2048() {
 void updateGame2048() {
     // If button pressed anywhere in game, exit to clock
     if (isButtonPressed()) {
-        currentAppState = APP_CLOCK;
+        currentAppState = AppState::APP_CLOCK;
         return;
     }
 
     if (currentState == GSTATE_PLAYING) {
         if (millis() - lastMoveTime > MOVE_COOLDOWN) {
-            Direction dir = DIR_NONE;
+            Direction dir = Direction::DIR_NONE;
 
             sensors_event_t a, g, temp;
             mpu.getEvent(&a, &g, &temp);
@@ -56,25 +53,32 @@ void updateGame2048() {
             float dY = a.acceleration.y - getBaseY();
 
             if (dX > RELATIVE_TILT_THRESHOLD)
-                dir = DIR_LEFT;
+                dir = Direction::DIR_LEFT;
             else if (dX < -RELATIVE_TILT_THRESHOLD)
-                dir = DIR_RIGHT;
+                dir = Direction::DIR_RIGHT;
             else if (dY > RELATIVE_TILT_THRESHOLD)
-                dir = DIR_DOWN;
+                dir = Direction::DIR_DOWN;
             else if (dY < -RELATIVE_TILT_THRESHOLD)
-                dir = DIR_UP;
-
-            if (dir != DIR_NONE) {
+                dir = Direction::DIR_UP;
+            // 轉換型態成uint8_t 後去判斷是否相同 只用 1*CLK
+            if (static_cast<uint8_t>(dir) ^ static_cast<uint8_t>(Direction::DIR_NONE)) {
                 if (!isTiltedGate) {
                     bool moved = false;
-                    if (dir == DIR_LEFT)
+                    switch (dir) {
+                    case Direction::DIR_LEFT:
                         moved = moveLeft();
-                    else if (dir == DIR_RIGHT)
+                        break;
+                    case Direction::DIR_RIGHT:
                         moved = moveRight();
-                    else if (dir == DIR_UP)
+                        break;
+                    case Direction::DIR_UP:
                         moved = moveUp();
-                    else if (dir == DIR_DOWN)
+                        break;
+                    case Direction::DIR_DOWN:
                         moved = moveDown();
+                        break;
+                    default:break;
+                    }
 
                     if (moved) {
                         addRandomTile();

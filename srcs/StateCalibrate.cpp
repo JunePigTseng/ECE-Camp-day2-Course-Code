@@ -4,7 +4,7 @@
 void updateStateCalibrate() {
     if (isButtonPressed()) {
         captureBaseline();
-        currentAppState = APP_PLAY_2048;
+        currentAppState = AppState::APP_PLAY_2048;
         return;
     }
 
