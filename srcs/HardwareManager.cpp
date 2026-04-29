@@ -52,7 +52,7 @@ int8_t initHardware() {
     // myRTC.adjust(DateTime(2026, 1, 10, 23, 59, 0));
 
     // Init MPU6050
-    if (!mpu.begin()) retrun 2;
+    if (!mpu.begin()) return 2;
 
     mpu.setAccelerometerRange(MPU6050_RANGE_4_G);
     mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
@@ -70,19 +70,15 @@ void updateHardware() {
     // Simple Polling Encoder Read
     int currentClk = digitalRead(ENC_CLK);
     if (currentClk != lastClk && currentClk == 1) {
-        if (digitalRead(ENC_DT) != currentClk) {
-            encoderDelta++;
-        } else {
-            encoderDelta--;
-        }
+        (digitalRead(ENC_DT) ^ currentClk)? encoderDelta++: encoderDelta--;
+        
     }
     lastClk = currentClk;
 
     // Simple Polling Button Debounce
     bool currentBtn = digitalRead(ENC_SW);
-    if (currentBtn != lastBtnState) {
-        lastDebounceTime = millis();
-    }
+    if (currentBtn ^ lastBtnState) lastDebounceTime = millis();
+
     if ((millis() - lastDebounceTime) > 50) {
         // Only trigger on release or press. Setting it to trigger on press (LOW):
         if (currentBtn == LOW && lastBtnState == HIGH) {
@@ -113,8 +109,7 @@ bool isTiltedRight() {
     // assuming normal flat is Z=9.8, right tilt means X jumps.
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
-    if (a.acceleration.x < -6.0)
-        return true;
+    if (a.acceleration.x < -6.0) return true;
     return false;
 }
 
@@ -123,8 +118,7 @@ bool isTiltedLeft() {
     mpu.getEvent(&a, &g, &temp);
     // If moving back to flat, X should be near 0 and Z should be near 9.8.
     // Wait, if "left tilt" means returning to initial holding:
-    if (abs(a.acceleration.x) < 3.0 && a.acceleration.z > 6.0)
-        return true;
+    if (abs(a.acceleration.x) < 3.0 && a.acceleration.z > 6.0) return true;
     return false;
 }
 

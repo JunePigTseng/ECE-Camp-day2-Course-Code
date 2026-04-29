@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <stdint.h>
-#include <stdint.h>
 
 #define MOVE_COOLDOWN 300
 
@@ -23,11 +22,9 @@ struct GameStatusRecord {
     // I use pow(2,board's_four_bit)
     // 0000 0000 0000 0000
     // 3項  2項  1項  0項
-    uint16_t board[4];
+    uint16_t map[4];
     uint32_t score;
-    bool victory;
     uint32_t lastMoveTime;
-    bool isTiltedGate;
     Direction dir;
 };
 // Lifecycle deprecated

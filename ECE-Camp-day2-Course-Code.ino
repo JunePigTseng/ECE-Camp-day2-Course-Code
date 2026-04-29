@@ -32,10 +32,7 @@ void loop() {
   // If we just entered a new state, fire any 1-time init routines
   // currentAppState != lastAppState?
   if (static_cast<uint8_t>(currentAppState) ^ static_cast<uint8_t>(lastAppState)) {
-    if (!static_cast<uint8_t>(currentAppState) ^ static_cast<uint8_t>(AppState::APP_PLAY_2048)) {
-      initGame2048();
-    }
-    // Could add init routines for others here
+   // Could add init routines for others here
     lastAppState = currentAppState;
   }
 
@@ -54,7 +51,8 @@ void loop() {
       updateStateCalibrate();
       break;
     case AppState::APP_PLAY_2048:
-      updateGame2048();
+      //通常不會有人init 直接放在gameLoop裡面 但我懶所以就都到gameLoop 執行
+      gameLoop();
       break;
   }
 }
