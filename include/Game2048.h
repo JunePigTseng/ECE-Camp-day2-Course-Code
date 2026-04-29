@@ -1,12 +1,14 @@
 #ifndef GAME2048_H
 #define GAME2048_H
 
-#include "Globals.h"
 #include <Arduino.h>
+#include <stdint.h>
+#include <stdint.h>
 
-// Lifecycle
-void initGame2048();
-void updateGame2048();
+#define MOVE_COOLDOWN 300
+
+uint8_t gameLoop();
+enum Game2048State { GSTATE_PLAYING, GSTATE_GAMEOVER };
 
 enum class Direction : uint8_t {
     DIR_NONE = 0x0,
@@ -15,13 +17,21 @@ enum class Direction : uint8_t {
     DIR_LEFT = 0x3,
     DIR_RIGHT = 0x4
 };
-enum Game2048State { GSTATE_PLAYING, GSTATE_GAMEOVER };
-/* struct GameStatusRecord {
-     uint16_t board[4][4];
-     uint32_t score;
-     bool victory;
-     uint32_t lastMoveTime;
-     bool isTiltedGate;
-     Game2048State currentState;
-};*/
+
+struct GameStatusRecord {
+    // four bit an unit of board record
+    // I use pow(2,board's_four_bit)
+    // 0000 0000 0000 0000
+    // 3項  2項  1項  0項
+    uint16_t board[4];
+    uint32_t score;
+    bool victory;
+    uint32_t lastMoveTime;
+    bool isTiltedGate;
+    Direction dir;
+};
+// Lifecycle deprecated
+void initGame2048();
+void updateGame2048();
+void resetGame();
 #endif

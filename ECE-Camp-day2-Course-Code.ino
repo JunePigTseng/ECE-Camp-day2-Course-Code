@@ -31,8 +31,8 @@ void loop() {
 
   // If we just entered a new state, fire any 1-time init routines
   // currentAppState != lastAppState?
-  if (currentAppState ^ lastAppState) {
-    if (!currentAppState ^ AppState::APP_PLAY_2048) {
+  if (static_cast<uint8_t>(currentAppState) ^ static_cast<uint8_t>(lastAppState)) {
+    if (!static_cast<uint8_t>(currentAppState) ^ static_cast<uint8_t>(AppState::APP_PLAY_2048)) {
       initGame2048();
     }
     // Could add init routines for others here

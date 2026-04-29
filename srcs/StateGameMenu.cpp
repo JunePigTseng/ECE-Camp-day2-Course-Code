@@ -25,7 +25,7 @@ void updateStateGameMenu() {
     // Select game
     if (isButtonPressed()) {
         if (gameCursor == 0) {
-            currentAppState = APP_CALIBRATE_2048;
+            currentAppState = AppState::APP_CALIBRATE_2048;
             return;
         }
     }

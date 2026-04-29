@@ -4,7 +4,6 @@
 
 // Game configuration
 const float RELATIVE_TILT_THRESHOLD = 4.0;
-const uint32_t MOVE_COOLDOWN = 300;
 
 // Game state variables
 static uint16_t board[4][4];
@@ -15,7 +14,7 @@ static bool isTiltedGate;
 static Game2048State currentState;
 
 // Internal Logic Methods
-static void resetGame();
+// static void resetGame();
 static void addRandomTile();
 static void drawBoard();
 static bool slideLine(uint16_t row[4]);
@@ -77,7 +76,8 @@ void updateGame2048() {
                     case Direction::DIR_DOWN:
                         moved = moveDown();
                         break;
-                    default:break;
+                    default:
+                        break;
                     }
 
                     if (moved) {
@@ -113,7 +113,7 @@ void updateGame2048() {
     }
 }
 
-static void resetGame() {
+void resetGame() {
     memset(board, 0, sizeof(board));
     score = 0;
     victory = false;

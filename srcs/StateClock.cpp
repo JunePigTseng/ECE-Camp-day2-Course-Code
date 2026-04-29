@@ -4,14 +4,14 @@
 void updateStateClock() {
     // Check transitions first
     if (isButtonPressed()) {
-        currentAppState = APP_SETTINGS;
+        currentAppState = AppState::APP_SETTINGS;
         return;
     }
 
     if (isTiltedRight()) {
         // Requires a small delay or debounce so we don't accidentally rapidly switch
         delay(200);
-        currentAppState = APP_GAME_MENU;
+        currentAppState = AppState::APP_GAME_MENU;
         return;
     }
 

@@ -9,7 +9,7 @@
 #include <RTClib.h>
 #include <SPI.h>
 #include <Wire.h>
-#include <cstdint>
+#include <stdint.h>
 
 // ST7735S TFT SPI Display Pins
 #define TFT_CS 10
