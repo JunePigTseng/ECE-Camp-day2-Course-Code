@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/share/arduino/hardware/archlinux-arduino/avr/**",
+                "/usr/share/arduino/libraries/**"
+            ],
+            "compilerPath": "/usr/bin/avr-gcc", 
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "linux-gcc-avr"
+        }
+    ],
+    "version": 4
+}
