@@ -4,31 +4,19 @@
 #include <Arduino.h>
 #include <stdint.h>
 
-#define MOVE_COOLDOWN 300
+// ---- Board Layout (240×320 display, portrait) ----
+#define CELL_PX         60      // pixel size of each cell (4 × 60 = 240 = full width)
+#define BOARD_OFFSET_X  0       // board starts at left edge
+#define BOARD_OFFSET_Y  40      // leave 40 px at top for score/title
+#define SCORE_Y         8       // y-position of score label row
+#define GAMEOVER_Y      268     // y-position of game-over message row
 
-uint8_t gameLoop();
-enum Game2048State { GSTATE_PLAYING, GSTATE_GAMEOVER };
+// ---- Gameplay Tuning ----
+#define MOVE_COOLDOWN   400U    // ms between accepted tilt moves
 
-enum class Direction : uint8_t {
-    DIR_NONE = 0x0,
-    DIR_UP = 0x1,
-    DIR_DOWN = 0x2,
-    DIR_LEFT = 0x3,
-    DIR_RIGHT = 0x4
-};
+// ---- Entry Point ----
+// Blocking loop; returns when user presses button to exit.
+// Caller is the main menu loop in .ino.
+void loopGame2048();
 
-struct GameStatusRecord {
-    // four bit an unit of board record
-    // I use pow(2,board's_four_bit)
-    // 0000 0000 0000 0000
-    // 3項  2項  1項  0項
-    uint16_t map[4];
-    uint32_t score;
-    uint32_t lastMoveTime;
-    Direction dir;
-};
-// Lifecycle deprecated
-void initGame2048();
-void updateGame2048();
-void resetGame();
-#endif
+#endif // GAME2048_H

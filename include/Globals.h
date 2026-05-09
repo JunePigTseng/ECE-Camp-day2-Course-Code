@@ -2,17 +2,23 @@
 #define GLOBALS_H
 
 #include <stdint.h>
-#ifndef RELATIVE_TILT_THRESHOLD
-#define RELATIVE_TILT_THRESHOLD 20
-#endif // !RELATIVE_TILT_THRESHOLD
-enum class AppState : uint8_t {
-    APP_CLOCK = 0x0,
-    APP_SETTINGS = 0x1,
-    APP_GAME_MENU = 0x2,
-    APP_CALIBRATE_2048 = 0x3,
-    APP_PLAY_2048 = 0x4
-};
 
-extern AppState currentAppState;
+// ---- Frame Rate ----
+#define FRAME_MS            20U     // 50 Hz
+// Caps loop to FRAME_MS; 'start' must be a uint32_t holding millis() at frame begin
+#define FRAME_DELAY(start)  do { \
+    uint32_t _el = millis() - (start); \
+    if (_el < FRAME_MS) delay(FRAME_MS - _el); \
+} while (0)
 
-#endif
+// ---- Screen dimensions (ILI9341 portrait) ----
+#define TFT_W   240
+#define TFT_H   320
+
+// ---- Tilt control (ADXL335) ----
+// Threshold expressed in degrees; compared as sin(angle) vs g to avoid asin() at runtime.
+// sin(15°) ≈ 0.2588
+#define TILT_THRESHOLD_DEG  15
+#define TILT_G_THRESH       0.2588f
+
+#endif // GLOBALS_H
