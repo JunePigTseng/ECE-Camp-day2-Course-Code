@@ -6,35 +6,35 @@
 // ================================================================
 // Private macros
 // ================================================================
-#define GRID_N  4
+#define GRID_N 4
 
 // ILI9341 RGB565 tile colours indexed by power-of-2 (index = log2(value))
 // index 0 = empty cell
-#define TILE_CLR_EMPTY  0x39E7u  // dark grey
+#define TILE_CLR_EMPTY 0x39E7u // dark grey
 // colours for values 2(1)..2048(11)
 static const uint16_t TILE_COLORS[12] PROGMEM = {
-    0x39E7u,  // 0  empty
-    0xEF5Du,  // 1  2
-    0xF5BBu,  // 2  4
-    0xFB6Du,  // 3  8
-    0xFD40u,  // 4  16
-    0xFC00u,  // 5  32
-    0xF800u,  // 6  64
-    0xFFE0u,  // 7  128
-    0xFEA0u,  // 8  256
-    0xFDA0u,  // 9  512
-    0xFF00u,  // 10 1024
-    0x07FFu   // 11 2048  cyan/win
+    0x39E7u, // 0  empty
+    0xEF5Du, // 1  2
+    0xF5BBu, // 2  4
+    0xFB6Du, // 3  8
+    0xFD40u, // 4  16
+    0xFC00u, // 5  32
+    0xF800u, // 6  64
+    0xFFE0u, // 7  128
+    0xFEA0u, // 8  256
+    0xFDA0u, // 9  512
+    0xFF00u, // 10 1024
+    0x07FFu  // 11 2048  cyan/win
 };
 
-#define GRID_LINE_CLR   0x7BEFu  // light grey grid lines
-#define TEXT_LIGHT      ILI9341_WHITE
-#define TEXT_DARK       ILI9341_BLACK
-#define BG_CLR          ILI9341_BLACK
+#define GRID_LINE_CLR 0x7BEFu // light grey grid lines
+#define TEXT_LIGHT ILI9341_WHITE
+#define TEXT_DARK ILI9341_BLACK
+#define BG_CLR ILI9341_BLACK
 
 // Pixel origin of cell (r, c)
-#define CELL_X(c)  (BOARD_OFFSET_X + (c) * CELL_PX)
-#define CELL_Y(r)  (BOARD_OFFSET_Y + (r) * CELL_PX)
+#define CELL_X(c) (BOARD_OFFSET_X + (c) * CELL_PX)
+#define CELL_Y(r) (BOARD_OFFSET_Y + (r) * CELL_PX)
 
 // log2 for uint16_t (only powers of 2 expected)
 #define LOG2_U16(v) (__builtin_ctz(v))
@@ -51,25 +51,25 @@ enum Dir : uint8_t { D_NONE = 0, D_UP, D_DOWN, D_LEFT, D_RIGHT };
 // ================================================================
 static uint16_t board[GRID_N][GRID_N];
 static uint32_t score;
-static GState   gState;
+static GState gState;
 static uint32_t lastMoveTime;
-static bool     tiltGate;       // prevents repeated moves on sustained tilt
+static bool tiltGate; // prevents repeated moves on sustained tilt
 
 // ================================================================
 // Private function prototypes
 // ================================================================
-static void     resetBoard();
-static void     addRandomTile();
-static void     drawStaticBG();
-static void     drawScore();
-static void     drawCell(uint8_t r, uint8_t c);
-static void     drawBoard();
-static void     drawGameOver(bool won);
-static void     drawCalibScreen();
-static bool     slideLine(uint16_t row[GRID_N]);
-static bool     doMove(Dir d);
-static bool     isGameOver();
-static Dir      readTiltDir();
+static void resetBoard();
+static void addRandomTile();
+static void drawStaticBG();
+static void drawScore();
+static void drawCell(uint8_t r, uint8_t c);
+static void drawBoard();
+static void drawGameOver(bool won);
+static void drawCalibScreen();
+static bool slideLine(uint16_t row[GRID_N]);
+static bool doMove(Dir d);
+static bool isGameOver();
+static Dir readTiltDir();
 
 // ================================================================
 // loopGame2048 – public entry (blocking)
@@ -91,9 +91,9 @@ void loopGame2048() {
 
     // ---- Game init ----
     resetBoard();
-    score        = 0;
+    score = 0;
     lastMoveTime = 0;
-    tiltGate     = false;
+    tiltGate = false;
 
     drawStaticBG();
     drawScore();
@@ -123,11 +123,11 @@ void loopGame2048() {
                                 drawGameOver(false);
                             }
                         }
-                        tiltGate     = true;
+                        tiltGate = true;
                         lastMoveTime = millis();
                     }
                 } else {
-                    tiltGate = false;   // device returned to flat
+                    tiltGate = false; // device returned to flat
                 }
             }
         }
@@ -152,13 +152,12 @@ static void addRandomTile() {
     uint8_t cnt = 0;
     for (uint8_t r = 0; r < GRID_N; r++)
         for (uint8_t c = 0; c < GRID_N; c++)
-            if (board[r][c] == 0)
-                empties[cnt++] = r * GRID_N + c;
+            if (board[r][c] == 0) empties[cnt++] = r * GRID_N + c;
 
     if (cnt == 0) return;
     uint8_t idx = (uint8_t)random(cnt);
-    uint8_t r   = empties[idx] / GRID_N;
-    uint8_t c   = empties[idx] % GRID_N;
+    uint8_t r = empties[idx] / GRID_N;
+    uint8_t c = empties[idx] % GRID_N;
     board[r][c] = (random(10) < 9) ? 2 : 4;
 }
 
@@ -174,10 +173,10 @@ static void drawStaticBG() {
 
     // Grid lines (horizontal + vertical)
     for (uint8_t i = 0; i <= GRID_N; i++) {
-        tft.drawFastHLine(BOARD_OFFSET_X, BOARD_OFFSET_Y + i * CELL_PX,
-                          GRID_N * CELL_PX, GRID_LINE_CLR);
-        tft.drawFastVLine(BOARD_OFFSET_X + i * CELL_PX, BOARD_OFFSET_Y,
-                          GRID_N * CELL_PX, GRID_LINE_CLR);
+        tft.drawFastHLine(BOARD_OFFSET_X, BOARD_OFFSET_Y + i * CELL_PX, GRID_N * CELL_PX,
+                          GRID_LINE_CLR);
+        tft.drawFastVLine(BOARD_OFFSET_X + i * CELL_PX, BOARD_OFFSET_Y, GRID_N * CELL_PX,
+                          GRID_LINE_CLR);
     }
 }
 
@@ -194,32 +193,36 @@ static void drawScore() {
 // ---- Draw a single cell ----
 static void drawCell(uint8_t r, uint8_t c) {
     uint16_t val = board[r][c];
-    int16_t  x   = CELL_X(c) + 1;  // +1: inside grid line
-    int16_t  y   = CELL_Y(r) + 1;
-    uint8_t  sz  = CELL_PX - 2;
+    int16_t x = CELL_X(c) + 1; // +1: inside grid line
+    int16_t y = CELL_Y(r) + 1;
+    uint8_t sz = CELL_PX - 2;
 
     // Background fill
-    uint8_t   pidx = (val == 0) ? 0 : (uint8_t)LOG2_U16(val);
+    uint8_t pidx = (val == 0) ? 0 : (uint8_t)LOG2_U16(val);
     if (pidx > 11) pidx = 11;
-    uint16_t  bg  = pgm_read_word(&TILE_COLORS[pidx]);
+    uint16_t bg = pgm_read_word(&TILE_COLORS[pidx]);
     tft.fillRect(x, y, sz, sz, bg);
 
     if (val == 0) return;
 
     // Choose text size by number of digits
     uint8_t tsize;
-    if      (val < 10)   tsize = 3;
-    else if (val < 100)  tsize = 3;
-    else if (val < 1000) tsize = 2;
-    else                 tsize = 1;
+    if (val < 10)
+        tsize = 3;
+    else if (val < 100)
+        tsize = 3;
+    else if (val < 1000)
+        tsize = 2;
+    else
+        tsize = 1;
 
     // Character dimensions: 6×8 per char at size 1
-    uint8_t  digits  = (val < 10) ? 1 : (val < 100) ? 2 : (val < 1000) ? 3 : 4;
-    uint8_t  charW   = 6 * tsize;
-    uint8_t  charH   = 8 * tsize;
-    uint8_t  textW   = digits * charW;
-    int16_t  tx      = x + (sz - textW) / 2;
-    int16_t  ty      = y + (sz - charH) / 2;
+    uint8_t digits = (val < 10) ? 1 : (val < 100) ? 2 : (val < 1000) ? 3 : 4;
+    uint8_t charW = 6 * tsize;
+    uint8_t charH = 8 * tsize;
+    uint8_t textW = digits * charW;
+    int16_t tx = x + (sz - textW) / 2;
+    int16_t ty = y + (sz - charH) / 2;
 
     tft.setTextSize(tsize);
     tft.setTextColor((pidx >= 7) ? TEXT_DARK : TEXT_LIGHT, bg);
@@ -230,14 +233,13 @@ static void drawCell(uint8_t r, uint8_t c) {
 // ---- Redraw all 16 cells ----
 static void drawBoard() {
     for (uint8_t r = 0; r < GRID_N; r++)
-        for (uint8_t c = 0; c < GRID_N; c++)
-            drawCell(r, c);
+        for (uint8_t c = 0; c < GRID_N; c++) drawCell(r, c);
     // Restore grid lines (cells overwrite them)
     for (uint8_t i = 0; i <= GRID_N; i++) {
-        tft.drawFastHLine(BOARD_OFFSET_X, BOARD_OFFSET_Y + i * CELL_PX,
-                          GRID_N * CELL_PX, GRID_LINE_CLR);
-        tft.drawFastVLine(BOARD_OFFSET_X + i * CELL_PX, BOARD_OFFSET_Y,
-                          GRID_N * CELL_PX, GRID_LINE_CLR);
+        tft.drawFastHLine(BOARD_OFFSET_X, BOARD_OFFSET_Y + i * CELL_PX, GRID_N * CELL_PX,
+                          GRID_LINE_CLR);
+        tft.drawFastVLine(BOARD_OFFSET_X + i * CELL_PX, BOARD_OFFSET_Y, GRID_N * CELL_PX,
+                          GRID_LINE_CLR);
     }
 }
 
@@ -283,7 +285,7 @@ static bool slideLine(uint16_t row[GRID_N]) {
                 if (row[j] != 0) {
                     row[i] = row[j];
                     row[j] = 0;
-                    moved   = true;
+                    moved = true;
                     break;
                 }
             }
@@ -292,10 +294,10 @@ static bool slideLine(uint16_t row[GRID_N]) {
     // Merge adjacent equal tiles
     for (uint8_t i = 0; i < GRID_N - 1; i++) {
         if (row[i] != 0 && row[i] == row[i + 1]) {
-            row[i]    <<= 1;    // ×2
-            score      += row[i];
-            row[i + 1]  = 0;
-            moved        = true;
+            row[i] <<= 1; // ×2
+            score += row[i];
+            row[i + 1] = 0;
+            moved = true;
         }
     }
     // Pack again after merge
@@ -305,7 +307,7 @@ static bool slideLine(uint16_t row[GRID_N]) {
                 if (row[j] != 0) {
                     row[i] = row[j];
                     row[j] = 0;
-                    moved   = true;
+                    moved = true;
                     break;
                 }
             }
@@ -321,34 +323,39 @@ static bool doMove(Dir d) {
     if (d == D_LEFT) {
         for (uint8_t r = 0; r < GRID_N; r++)
             if (slideLine(board[r])) moved = true;
-    }
-    else if (d == D_RIGHT) {
+    } else if (d == D_RIGHT) {
         for (uint8_t r = 0; r < GRID_N; r++) {
-            tmp[0]=board[r][3]; tmp[1]=board[r][2];
-            tmp[2]=board[r][1]; tmp[3]=board[r][0];
+            tmp[0] = board[r][3];
+            tmp[1] = board[r][2];
+            tmp[2] = board[r][1];
+            tmp[3] = board[r][0];
             if (slideLine(tmp)) {
-                board[r][3]=tmp[0]; board[r][2]=tmp[1];
-                board[r][1]=tmp[2]; board[r][0]=tmp[3];
+                board[r][3] = tmp[0];
+                board[r][2] = tmp[1];
+                board[r][1] = tmp[2];
+                board[r][0] = tmp[3];
                 moved = true;
             }
         }
-    }
-    else if (d == D_UP) {
+    } else if (d == D_UP) {
         for (uint8_t c = 0; c < GRID_N; c++) {
             for (uint8_t r = 0; r < GRID_N; r++) tmp[r] = board[r][c];
-            if (slideLine(tmp))  {
+            if (slideLine(tmp)) {
                 for (uint8_t r = 0; r < GRID_N; r++) board[r][c] = tmp[r];
                 moved = true;
             }
         }
-    }
-    else if (d == D_DOWN) {
+    } else if (d == D_DOWN) {
         for (uint8_t c = 0; c < GRID_N; c++) {
-            tmp[0]=board[3][c]; tmp[1]=board[2][c];
-            tmp[2]=board[1][c]; tmp[3]=board[0][c];
+            tmp[0] = board[3][c];
+            tmp[1] = board[2][c];
+            tmp[2] = board[1][c];
+            tmp[3] = board[0][c];
             if (slideLine(tmp)) {
-                board[3][c]=tmp[0]; board[2][c]=tmp[1];
-                board[1][c]=tmp[2]; board[0][c]=tmp[3];
+                board[3][c] = tmp[0];
+                board[2][c] = tmp[1];
+                board[1][c] = tmp[2];
+                board[0][c] = tmp[3];
                 moved = true;
             }
         }
@@ -363,8 +370,8 @@ static bool isGameOver() {
 
     for (uint8_t r = 0; r < GRID_N; r++)
         for (uint8_t c = 0; c < GRID_N; c++) {
-            if (c < GRID_N-1 && board[r][c] == board[r][c+1]) return false;
-            if (r < GRID_N-1 && board[r][c] == board[r+1][c]) return false;
+            if (c < GRID_N - 1 && board[r][c] == board[r][c + 1]) return false;
+            if (r < GRID_N - 1 && board[r][c] == board[r + 1][c]) return false;
         }
     return true;
 }
@@ -378,9 +385,13 @@ static Dir readTiltDir() {
     float gx = ACCEL_TO_G(ACCEL_RAW_X(), getBaseRawX());
     float gy = ACCEL_TO_G(ACCEL_RAW_Y(), getBaseRawY());
 
-    if      (gx >  TILT_G_THRESH) return D_RIGHT;
-    else if (gx < -TILT_G_THRESH) return D_LEFT;
-    else if (gy >  TILT_G_THRESH) return D_DOWN;
-    else if (gy < -TILT_G_THRESH) return D_UP;
+    if (gx > TILT_G_THRESH)
+        return D_LEFT;
+    else if (gx < -TILT_G_THRESH)
+        return D_RIGHT;
+    else if (gy > TILT_G_THRESH)
+        return D_DOWN;
+    else if (gy < -TILT_G_THRESH)
+        return D_UP;
     return D_NONE;
 }

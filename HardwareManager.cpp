@@ -1,7 +1,8 @@
 #include "include/HardwareManager.h"
 
 // ---- Display Object ----
-Adafruit_ILI9341 tft(TFT_CS, TFT_DC, TFT_RST);
+// Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, 11, 13, TFT_RST, 12);
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
 // ---- Private: Encoder (ISR-driven) ----
 // volatile: shared between ISR and main context
@@ -10,8 +11,10 @@ static volatile int8_t encoderDelta = 0;
 // ISR – fires on RISING edge of CLK (D3 / INT1)
 static void encoderISR() {
     // DT state at rising CLK edge determines direction
-    if (digitalRead(ENC_DT) == LOW) encoderDelta++;
-    else                             encoderDelta--;
+    if (digitalRead(ENC_DT) == LOW)
+        encoderDelta--;
+    else
+        encoderDelta++;
 }
 
 // ---- Private: Button (EasyButton handles debounce internally) ----
@@ -42,7 +45,7 @@ void initHardware() {
         Serial.println(F("[HW] WARNING: display not responding! Check SPI wiring."));
     }
 
-    tft.setRotation(0);                             // Portrait 240x320
+    tft.setRotation(0); // Portrait 240x320
     Serial.println(F("[HW] fillScreen..."));
     tft.fillScreen(ILI9341_BLACK);
     tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK); // bg colour prevents ghost text
@@ -54,8 +57,9 @@ void initHardware() {
     // ---- Rotary Encoder ----
     // CLK (D3) = INT1 → ISR; DT (D4) = GPIO input; SW (D2) = EasyButton
     pinMode(ENC_CLK, INPUT_PULLUP);
-    pinMode(ENC_DT,  INPUT_PULLUP);
-    encButton.begin();  // EasyButton sets ENC_SW as INPUT_PULLUP internally
+    pinMode(ENC_DT, INPUT_PULLUP);
+    pinMode(ENC_SW, INPUT_PULLUP);
+    encButton.begin(); // EasyButton sets ENC_SW as INPUT_PULLUP internally
     Serial.println(F("[HW] encoder + button init done"));
 
     Serial.println(F("[HW] initHardware complete"));
@@ -71,7 +75,7 @@ void updateHardware() {
 // ================================================================
 void enableEncoderISR() {
     noInterrupts();
-    encoderDelta = 0;   // discard stale delta before re-enabling
+    encoderDelta = 0; // discard stale delta before re-enabling
     interrupts();
     attachInterrupt(digitalPinToInterrupt(ENC_CLK), encoderISR, RISING);
     Serial.println(F("[ENC] ISR enabled"));
@@ -86,14 +90,14 @@ void disableEncoderISR() {
 int8_t getEncoderDelta() {
     // Atomic read+clear (ISR may fire between read and clear)
     noInterrupts();
-    int8_t d     = encoderDelta;
+    int8_t d = encoderDelta;
     encoderDelta = 0;
     interrupts();
     return d;
 }
 
 bool isButtonPressed() {
-    return encButton.wasPressed();  // true once per press; EasyButton resets it
+    return encButton.wasPressed(); // true once per press; EasyButton resets it
 }
 
 // ================================================================
@@ -109,6 +113,12 @@ void captureBaseline() {
     Serial.println(baseRawZ);
 }
 
-int16_t getBaseRawX() { return baseRawX; }
-int16_t getBaseRawY() { return baseRawY; }
-int16_t getBaseRawZ() { return baseRawZ; }
+int16_t getBaseRawX() {
+    return baseRawX;
+}
+int16_t getBaseRawY() {
+    return baseRawY;
+}
+int16_t getBaseRawZ() {
+    return baseRawZ;
+}
