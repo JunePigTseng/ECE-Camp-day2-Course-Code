@@ -2,16 +2,15 @@
 #include "include/HardwareManager.h"
 #include "include/Game2048.h"
 #include "include/AngleTest.h"
-#include "include/BuddhaBlessing.h"
 #include "include/CatchGame.h"
 
 // ================================================================
 // Main Menu Configuration
 // ================================================================
-#define MENU_ITEMS      4           // 0=2048, 1=Angle, 2=Blessing, 3=Catch
+#define MENU_ITEMS      3           // 0=2048, 1=Angle, 2=Catch
 #define MENU_TITLE_Y    10
 #define MENU_ITEM_Y0    80          // y of first menu item
-#define MENU_ITEM_DY    30          // vertical spacing
+#define MENU_ITEM_DY    50          // vertical spacing
 #define MENU_CURSOR_X   14
 #define MENU_TEXT_X     30
 #define MENU_BG         ILI9341_BLACK
@@ -42,16 +41,14 @@ static void drawMenuBG() {
     tft.drawFastHLine(0, 55, TFT_W, 0x7BEFu);
 
     // Static item labels
-    tft.setTextSize(1);
+    tft.setTextSize(2);
     tft.setTextColor(MENU_ITEM_CLR, MENU_BG);
     tft.setCursor(MENU_TEXT_X, MENU_ITEM_Y0);
     tft.print(F("1. 2048 Game"));
     tft.setCursor(MENU_TEXT_X, MENU_ITEM_Y0 + MENU_ITEM_DY);
     tft.print(F("2. Angle Test"));
     tft.setCursor(MENU_TEXT_X, MENU_ITEM_Y0 + 2 * MENU_ITEM_DY);
-    tft.print(F("3. Buddha Bless"));
-    tft.setCursor(MENU_TEXT_X, MENU_ITEM_Y0 + 3 * MENU_ITEM_DY);
-    tft.print(F("4. Catch Game"));
+    tft.print(F("3. Catch Game"));
 
     // Hint at bottom
     tft.setTextColor(0x7BEFu, MENU_BG);
@@ -90,6 +87,7 @@ void loop() {
     if (enc) {
         int8_t oldCursor = menuCursor;
         menuCursor += enc;
+        // menuCursor %= MENU_ITEMS; // wrap around
         if (menuCursor < 0)           menuCursor = 0;
         if (menuCursor >= MENU_ITEMS) menuCursor = MENU_ITEMS - 1;
         if (static_cast<int8_t>(menuCursor ^ oldCursor))
@@ -111,11 +109,6 @@ void loop() {
                 Serial.println(F("[MENU] <- loopAngleTest"));
                 break;
             case 2:
-                Serial.println(F("[MENU] -> loopBuddhaBlessing"));
-                loopBuddhaBlessing();
-                Serial.println(F("[MENU] <- loopBuddhaBlessing"));
-                break;
-            case 3:
                 Serial.println(F("[MENU] -> loopCatchGame"));
                 loopCatchGame();
                 Serial.println(F("[MENU] <- loopCatchGame"));
