@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 // ---- Frame Rate ----
-#define FRAME_MS            20U     // 50 Hz
+#define FRAME_MS            10U     // 100 Hz
 // Caps loop to FRAME_MS; 'start' must be a uint32_t holding millis() at frame begin
 #define FRAME_DELAY(start)  do { \
     uint32_t _el = millis() - (start); \
@@ -18,7 +18,7 @@
 // ---- Tilt control (ADXL335) ----
 // Threshold expressed in degrees; compared as sin(angle) vs g to avoid asin() at runtime.
 // sin(15°) ≈ 0.2588
-#define TILT_THRESHOLD_DEG  15
-#define TILT_G_THRESH       0.2588f
+#define TILT_THRESHOLD_DEG  30
+#define TILT_G_THRESH       0.5f
 
 #endif // GLOBALS_H

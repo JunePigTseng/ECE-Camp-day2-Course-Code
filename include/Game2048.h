@@ -4,6 +4,12 @@
 #include <Arduino.h>
 #include <stdint.h>
 
+// ---- Game States ----
+enum class GState : uint8_t { GS_CALIBRATE, GS_PLAYING, GS_GAMEOVER };
+
+// ---- Tilt Directions ----
+enum class Dir : uint8_t { D_NONE = 0, D_UP, D_DOWN, D_LEFT, D_RIGHT };
+
 // ---- Board Layout (240×320 display, portrait) ----
 #define CELL_PX         60      // pixel size of each cell (4 × 60 = 240 = full width)
 #define BOARD_OFFSET_X  0       // board starts at left edge

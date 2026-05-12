@@ -33,7 +33,7 @@ void initHardware() {
 
     // ---- ILI9341 TFT ----
     Serial.println(F("[HW] tft.begin()..."));
-    tft.begin();
+    tft.begin(3999999);
     Serial.println(F("[HW] tft.begin() done"));
 
     // Read power-mode register: ILI9341 returns 0x9C when healthy.

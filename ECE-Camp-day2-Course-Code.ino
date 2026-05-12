@@ -2,11 +2,13 @@
 #include "include/HardwareManager.h"
 #include "include/Game2048.h"
 #include "include/AngleTest.h"
+#include "include/BuddhaBlessing.h"
+#include "include/CatchGame.h"
 
 // ================================================================
 // Main Menu Configuration
 // ================================================================
-#define MENU_ITEMS      2           // 0=2048, 1=Angle Test  (+future games)
+#define MENU_ITEMS      4           // 0=2048, 1=Angle, 2=Blessing, 3=Catch
 #define MENU_TITLE_Y    10
 #define MENU_ITEM_Y0    80          // y of first menu item
 #define MENU_ITEM_DY    30          // vertical spacing
@@ -46,6 +48,10 @@ static void drawMenuBG() {
     tft.print(F("1. 2048 Game"));
     tft.setCursor(MENU_TEXT_X, MENU_ITEM_Y0 + MENU_ITEM_DY);
     tft.print(F("2. Angle Test"));
+    tft.setCursor(MENU_TEXT_X, MENU_ITEM_Y0 + 2 * MENU_ITEM_DY);
+    tft.print(F("3. Buddha Bless"));
+    tft.setCursor(MENU_TEXT_X, MENU_ITEM_Y0 + 3 * MENU_ITEM_DY);
+    tft.print(F("4. Catch Game"));
 
     // Hint at bottom
     tft.setTextColor(0x7BEFu, MENU_BG);
@@ -81,12 +87,12 @@ void loop() {
 
     // ---- Encoder navigation ----
     int8_t enc = getEncoderDelta();
-    if (enc != 0) {
+    if (enc) {
         int8_t oldCursor = menuCursor;
         menuCursor += enc;
         if (menuCursor < 0)           menuCursor = 0;
         if (menuCursor >= MENU_ITEMS) menuCursor = MENU_ITEMS - 1;
-        if (menuCursor != oldCursor)
+        if (static_cast<int8_t>(menuCursor ^ oldCursor))
             drawMenuCursor(oldCursor, menuCursor);
     }
 
@@ -103,6 +109,16 @@ void loop() {
                 Serial.println(F("[MENU] -> loopAngleTest"));
                 loopAngleTest();    // blocking; returns on exit
                 Serial.println(F("[MENU] <- loopAngleTest"));
+                break;
+            case 2:
+                Serial.println(F("[MENU] -> loopBuddhaBlessing"));
+                loopBuddhaBlessing();
+                Serial.println(F("[MENU] <- loopBuddhaBlessing"));
+                break;
+            case 3:
+                Serial.println(F("[MENU] -> loopCatchGame"));
+                loopCatchGame();
+                Serial.println(F("[MENU] <- loopCatchGame"));
                 break;
             default:
                 break;

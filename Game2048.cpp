@@ -42,16 +42,14 @@ static const uint16_t TILE_COLORS[12] PROGMEM = {
 // ================================================================
 // Private types
 // ================================================================
-enum GState : uint8_t { GS_CALIBRATE, GS_PLAYING, GS_GAMEOVER };
-
-enum Dir : uint8_t { D_NONE = 0, D_UP, D_DOWN, D_LEFT, D_RIGHT };
+// GState and Dir enums are defined in Game2048.h (Rule 3)
 
 // ================================================================
 // Private state
 // ================================================================
 static uint16_t board[GRID_N][GRID_N];
 static uint32_t score;
-static GState gState;
+static GState gState = GState::GS_CALIBRATE;
 static uint32_t lastMoveTime;
 static bool tiltGate; // prevents repeated moves on sustained tilt
 
@@ -76,15 +74,15 @@ static Dir readTiltDir();
 // ================================================================
 void loopGame2048() {
     // ---- Calibration phase ----
-    gState = GS_CALIBRATE;
+    gState = GState::GS_CALIBRATE;
     drawCalibScreen();
 
-    while (gState == GS_CALIBRATE) {
+    while (gState == GState::GS_CALIBRATE) {
         uint32_t fs = millis();
         updateHardware();
         if (isButtonPressed()) {
             captureBaseline();
-            gState = GS_PLAYING;
+            gState = GState::GS_PLAYING;
         }
         FRAME_DELAY(fs);
     }
@@ -107,19 +105,19 @@ void loopGame2048() {
         // Any button press exits back to main menu
         if (isButtonPressed()) return;
 
-        if (gState == GS_PLAYING) {
+        if (gState == GState::GS_PLAYING) {
             if (millis() - lastMoveTime >= MOVE_COOLDOWN) {
                 Dir d = readTiltDir();
 
-                if (d != D_NONE) {
-                    if (!tiltGate) {
+                if (static_cast<uint8_t>(d) ^ static_cast<uint8_t>(Dir::D_NONE)) {
+                    if (static_cast<uint8_t>(tiltGate) ^ 1) {
                         bool moved = doMove(d);
                         if (moved) {
                             addRandomTile();
                             drawBoard();
                             drawScore();
                             if (isGameOver()) {
-                                gState = GS_GAMEOVER;
+                                gState = GState::GS_GAMEOVER;
                                 drawGameOver(false);
                             }
                         }
@@ -185,7 +183,7 @@ static void drawScore() {
     // Erase old value area (fixed width region after "SCORE:")
     tft.fillRect(45, SCORE_Y, 90, 8, BG_CLR);
     tft.setTextColor(TEXT_LIGHT, BG_CLR);
-    tft.setTextSize(1);
+    tft.setTextSize(3);
     tft.setCursor(45, SCORE_Y);
     tft.print(score);
 }
@@ -320,10 +318,10 @@ static bool doMove(Dir d) {
     bool moved = false;
     uint16_t tmp[GRID_N];
 
-    if (d == D_LEFT) {
+    if (d == Dir::D_LEFT) {
         for (uint8_t r = 0; r < GRID_N; r++)
             if (slideLine(board[r])) moved = true;
-    } else if (d == D_RIGHT) {
+    } else if (d == Dir::D_RIGHT) {
         for (uint8_t r = 0; r < GRID_N; r++) {
             tmp[0] = board[r][3];
             tmp[1] = board[r][2];
@@ -337,7 +335,7 @@ static bool doMove(Dir d) {
                 moved = true;
             }
         }
-    } else if (d == D_UP) {
+    } else if (d == Dir::D_UP) {
         for (uint8_t c = 0; c < GRID_N; c++) {
             for (uint8_t r = 0; r < GRID_N; r++) tmp[r] = board[r][c];
             if (slideLine(tmp)) {
@@ -345,7 +343,7 @@ static bool doMove(Dir d) {
                 moved = true;
             }
         }
-    } else if (d == D_DOWN) {
+    } else if (d == Dir::D_DOWN) {
         for (uint8_t c = 0; c < GRID_N; c++) {
             tmp[0] = board[3][c];
             tmp[1] = board[2][c];
@@ -386,12 +384,12 @@ static Dir readTiltDir() {
     float gy = ACCEL_TO_G(ACCEL_RAW_Y(), getBaseRawY());
 
     if (gx > TILT_G_THRESH)
-        return D_LEFT;
+        return Dir::D_LEFT;
     else if (gx < -TILT_G_THRESH)
-        return D_RIGHT;
+        return Dir::D_RIGHT;
     else if (gy > TILT_G_THRESH)
-        return D_DOWN;
+        return Dir::D_DOWN;
     else if (gy < -TILT_G_THRESH)
-        return D_UP;
-    return D_NONE;
+        return Dir::D_UP;
+    return Dir::D_NONE;
 }
