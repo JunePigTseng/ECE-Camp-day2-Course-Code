@@ -1,27 +1,28 @@
 #ifndef GAME2048_H
 #define GAME2048_H
 
-#include "Globals.h"
 #include <Arduino.h>
+#include <stdint.h>
 
-// Lifecycle
-void initGame2048();
-void updateGame2048();
+// ---- Game States ----
+enum class GState : uint8_t { GS_CALIBRATE, GS_PLAYING, GS_GAMEOVER };
 
-enum class Direction : uint8_t {
-    DIR_NONE = 0x0,
-    DIR_UP = 0x1,
-    DIR_DOWN = 0x2,
-    DIR_LEFT = 0x3,
-    DIR_RIGHT = 0x4
-};
-enum Game2048State { GSTATE_PLAYING, GSTATE_GAMEOVER };
-/* struct GameStatusRecord {
-     uint16_t board[4][4];
-     uint32_t score;
-     bool victory;
-     uint32_t lastMoveTime;
-     bool isTiltedGate;
-     Game2048State currentState;
-};*/
-#endif
+// ---- Tilt Directions ----
+enum class Dir : uint8_t { D_NONE = 0, D_UP, D_DOWN, D_LEFT, D_RIGHT };
+
+// ---- Board Layout (240×320 display, portrait) ----
+#define CELL_PX         60      // pixel size of each cell (4 × 60 = 240 = full width)
+#define BOARD_OFFSET_X  0       // board starts at left edge
+#define BOARD_OFFSET_Y  40      // leave 40 px at top for score/title
+#define SCORE_Y         8       // y-position of score label row
+#define GAMEOVER_Y      268     // y-position of game-over message row
+
+// ---- Gameplay Tuning ----
+#define MOVE_COOLDOWN   400U    // ms between accepted tilt moves
+
+// ---- Entry Point ----
+// Blocking loop; returns when user presses button to exit.
+// Caller is the main menu loop in .ino.
+void loopGame2048();
+
+#endif // GAME2048_H

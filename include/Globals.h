@@ -3,14 +3,22 @@
 
 #include <stdint.h>
 
-enum class AppState : uint8_t {
-    APP_CLOCK = 0x0,
-    APP_SETTINGS = 0x1,
-    APP_GAME_MENU = 0x2,
-    APP_CALIBRATE_2048 = 0x3,
-    APP_PLAY_2048 = 0x4
-};
+// ---- Frame Rate ----
+#define FRAME_MS            10U     // 100 Hz
+// Caps loop to FRAME_MS; 'start' must be a uint32_t holding millis() at frame begin
+#define FRAME_DELAY(start)  do { \
+    uint32_t _el = millis() - (start); \
+    if (_el < FRAME_MS) delay(FRAME_MS - _el); \
+} while (0)
 
-extern AppState currentAppState;
+// ---- Screen dimensions (ILI9341 portrait) ----
+#define TFT_W   240
+#define TFT_H   320
 
-#endif
+// ---- Tilt control (ADXL335) ----
+// Threshold expressed in degrees; compared as sin(angle) vs g to avoid asin() at runtime.
+// sin(15°) ≈ 0.2588
+#define TILT_THRESHOLD_DEG  30
+#define TILT_G_THRESH       0.5f
+
+#endif // GLOBALS_H

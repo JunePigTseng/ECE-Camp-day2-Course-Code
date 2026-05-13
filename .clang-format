@@ -7,8 +7,8 @@ AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false
 AlignOperands: true
 AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
 BreakBeforeBraces: Attach
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
